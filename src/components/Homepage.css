@@ -1,0 +1,48 @@
+.Main{
+    display: grid;
+    grid-template-columns: 1rem 1fr 4fr 1rem;
+    grid-template-rows: 1fr 0vh auto;
+}
+.Card1{
+    grid-column: 2/4;
+    grid-row: 2/3;
+}
+.Card2{
+    grid-column: 2/3;
+    grid-row: 3/4;
+}
+.Card3{
+    grid-column: 3/4;
+    grid-row: 3/4;
+}
+
+.material-symbols-outlined {
+    position: relative;
+}
+.shoppingCart{
+    position: relative;
+  
+}
+.count{
+    position: absolute;
+    font-size: 12px;
+    background-color: yellow;
+    border-radius: 50%;
+    top:-5px;
+    right: 5px;
+}
+.cardProduct{
+    display: flex;
+   align-content: center;
+   align-items: center;
+   text-align: center;
+}
+.cartProduct input{
+    width: 30px;
+    text-align: center;
+}
+.cartImage{
+    width:50px;
+    height: 50px;
+    object-fit: contain;
+}

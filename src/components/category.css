@@ -1,0 +1,16 @@
+.Categories{
+display: flex;
+width: 10rem;
+flex-direction: column;
+padding: 10px;
+}
+.Categories span{
+    white-space: nowrap;
+    padding: 10px;
+    color: black;
+    font-weight: bold;
+}
+.Categories span:hover{
+    color: skyblue;
+    cursor: pointer;
+}

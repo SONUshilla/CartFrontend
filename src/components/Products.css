@@ -1,0 +1,132 @@
+/* Basic styling for the homepage */
+.productsList {
+    text-align: center;
+    font-family: Arial, sans-serif;
+  }
+  
+  .header {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px;
+    background-color: #f8f9fa;
+  }
+  
+  .logo {
+    font-size: 24px;
+    font-weight: bold;
+  }
+  .header .logo {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.header .logo img {
+    height: 50px; /* Adjust the height as needed */
+    margin-right: 10px; /* Space between the image and text */
+}
+
+.header .logo span {
+    font-size: 24px; /* Adjust the font size as needed */
+    font-weight: bold;
+    color: #333; /* Change this to match your theme */
+}
+
+  .auth-buttons button {
+    margin-left: 10px;
+    padding: 10px 20px;
+    border: none;
+    background-color: #007bff;
+    color: white;
+    cursor: pointer;
+    border-radius: 5px;
+  }
+  
+  .auth-buttons .sign-up {
+    background-color: #28a745;
+  }
+  .auth-buttons{
+    display: flex;
+gap: 10px;
+  }
+  
+  .categories {
+    margin-top: 40px;
+  }
+  
+  .category-list {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  
+  .category-item {
+    border-radius: 50%;
+    background-color: #ffc107;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 10px;
+    cursor: pointer;
+    font-weight: bold;
+  }
+
+  .products {
+    margin-top: 40px;
+  }
+  .product-list{
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    @media (max-width:800px) {
+      grid-template-columns: 1fr 1fr 1fr;
+    }
+  }
+  .product-item{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+
+  }
+  .productImage{
+    width: 80%;
+    height: 80%;
+    object-fit: contain;
+  }
+  .product-title{
+    
+  }
+  .productBottom{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+  .product-price{
+    font-weight: bold;
+    font-size: 25px;
+    display: flex;
+    align-content: center;
+    justify-content: center;
+    align-items: center;
+    gap :10px;
+
+  }
+  .product-price p{
+    margin: 0px;
+    padding: 0px;
+    font-size: 15px;
+    color:rgb(61, 139, 61);
+  }
+
+  .AddToCart{
+    background-color: #ffd814;
+    color: #6d5f12;
+    border-radius: 20px;
+    padding: 10px;
+    font-size: large;
+    border: none;
+    width: fit-content;
+    white-space: nowrap;
+  }
