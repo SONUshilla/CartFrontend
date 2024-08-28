@@ -3,12 +3,19 @@ display: flex;
 width: 10rem;
 flex-direction: column;
 padding: 10px;
+@media (max-width:600px) {
+    width: 7rem;
+  }
 }
 .Categories span{
     white-space: nowrap;
     padding: 10px;
     color: black;
     font-weight: bold;
+    @media (max-width:600px) {
+        padding: 5px;
+        font-size: 15px;
+      }
 }
 .Categories span:hover{
     color: skyblue;
