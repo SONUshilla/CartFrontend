@@ -80,19 +80,17 @@ const navigate=useNavigate();
   const { subtotal, shipping, tax, total } = calculateTotals();
 
   // Handle form submission
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     setIsProcessing(true);
-    if(handleCheckout(products,address,navigate,paymentMethod))
-    {
+    const id = await handleCheckout(products, address, navigate, paymentMethod);
+    if (id) {
       setIsProcessing(false);
-      navigate('/orderConfirmationPage');
-    }
-    else
-    {
+      navigate(`/orders/${id}`);
+    } else {
       setIsProcessing(false);
     }
   };
-
+  
   return (
     <div
       className={`min-h-screen ${

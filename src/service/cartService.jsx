@@ -67,7 +67,9 @@ export function AddToCart(items) {
           });
         if (response.status === 200) {
             localStorage.removeItem("cartItems");
-            return true;
+            console.log(response.data.orderId);
+            return response.data.orderId;
+            
         }
     } catch (error) {
         navigate("/signIn");

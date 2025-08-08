@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { motion } from "framer-motion";
-import { FiArrowLeft, FiTruck, FiCreditCard, FiMapPin, FiCalendar, FiPackage, FiDollarSign, FiUser } from "react-icons/fi";
+import { FiArrowLeft, FiTruck, FiCreditCard, FiMapPin, FiCalendar, FiPackage, FiDollarSign, FiUser, FiXCircle } from "react-icons/fi";
 
 const baseUrl = process.env.REACT_APP_BASEURL;
 
@@ -12,7 +12,9 @@ export default function OrderDetailsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [shipping_address, setShippingAddress] = useState(null);
-
+  const [cancelling, setCancelling] = useState(false);
+  const [cancelSuccess, setCancelSuccess] = useState(false);
+const navigation=useNavigate();
   useEffect(() => {
     const fetchOrder = async () => {
       try {
@@ -33,7 +35,32 @@ export default function OrderDetailsPage() {
     };
 
     fetchOrder();
-  }, [id]);
+  }, [id, cancelSuccess]);
+
+  const handleCancelOrder = async () => {
+    setCancelling(true);
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) throw new Error("User not logged in");
+
+      const response = await axios.patch(
+        `${baseUrl}/orders/${id}/cancel`,
+        {},
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      if (response.status===200) {
+        // Update local state to reflect cancellation
+        setOrder(prev => ({ ...prev, status: "Cancelled" }));
+        setCancelSuccess(true);
+        navigation(`/orders/${id}`)
+      }
+    } catch (err) {
+      setError(err.response?.data?.message || "Failed to cancel order");
+    } finally {
+      setCancelling(false);
+    }
+  };
 
   // Theme variables for sharp, edgy design
   const bgColor = 'bg-white';
@@ -102,6 +129,30 @@ export default function OrderDetailsPage() {
     </div>
   );
 
+  // Status configuration for UI display
+  const statusConfig = {
+    Processing: {
+      bg: "bg-gray-100",
+      text: "text-black",
+      border: "border-black",
+      canCancel: true
+    },
+    Cancelled: {
+      bg: "bg-gray-300",
+      text: "text-gray-700",
+      border: "border-gray-500",
+      canCancel: false
+    },
+    Delivered: {
+      bg: "bg-gray-100",
+      text: "text-black",
+      border: "border-black",
+      canCancel: false
+    }
+  };
+
+  const currentStatus = statusConfig[order.status] || statusConfig.Processing;
+
   return (
     <div className={`min-h-screen ${bgColor} transition-colors duration-300`}>
       <div className="max-w-4xl mx-auto px-4 py-8">
@@ -150,18 +201,34 @@ export default function OrderDetailsPage() {
             </div>
 
             <div
-              className={`px-4 py-2 border-2 border-black text-xs font-bold uppercase tracking-widest ${
-                order.status === "Delivered"
-                  ? "bg-black text-white"
-                  : order.status === "Processing"
-                  ? "bg-gray-100 text-black"
-                  : "bg-gray-100 text-gray-500"
-              }`}
+              className={`px-4 py-2 border-2 ${currentStatus.border} text-xs font-bold uppercase tracking-widest ${currentStatus.bg} ${currentStatus.text}`}
             >
               {order.status.toUpperCase()}
             </div>
           </div>
         </header>
+
+        {/* Cancel button - only shown for cancellable orders */}
+        {currentStatus.canCancel && (
+          <div className="flex justify-end mb-6">
+            <button
+              onClick={handleCancelOrder}
+              disabled={cancelling}
+              className={`relative border-2 border-red-600 overflow-hidden px-6 py-3 text-red-600 hover:text-white font-bold uppercase text-sm tracking-wide flex items-center group transition-all duration-300 ${
+                cancelling ? "opacity-75 cursor-not-allowed" : ""
+              }`}
+            >
+              <span className="absolute inset-0 bg-red-600 transform scale-x-0 origin-left transition-transform duration-300 ease-out group-hover:scale-x-100 z-0" />
+              <span className="relative z-10 flex items-center">
+                {cancelling ? "CANCELLING..." : (
+                  <>
+                    <FiXCircle className="mr-2" /> CANCEL ORDER
+                  </>
+                )}
+              </span>
+            </button>
+          </div>
+        )}
 
         {/* Order Summary Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
@@ -212,6 +279,8 @@ export default function OrderDetailsPage() {
             </div>
           </motion.div>
         </div>
+        
+        {/* Mobile timeline view */}
         <div className={`border-2 border-black p-6 ${cardBg} md:hidden mb-4`}>
           <div className="flex items-center border-b border-black pb-4 mb-4">
             <FiCalendar className="w-5 h-5 mr-2 text-black" />
@@ -265,54 +334,83 @@ export default function OrderDetailsPage() {
               </div>
             </div>
 
-            <div className="flex">
-              <div className="flex flex-col items-center mr-3">
-                <div className="w-3 h-3 bg-black rounded-none"></div>
-                <div className="w-0.5 h-full bg-black mt-1"></div>
-              </div>
-              <div>
-                <p className="text-sm font-bold uppercase tracking-wide">
-                  SHIPPED
-                </p>
-                <p className="text-xs font-bold uppercase tracking-widest text-gray-500 mt-1">
-                  {order.status === "Delivered"
-                    ? new Date(order.date_placed)
-                        .toLocaleDateString("en-US", {
-                          month: "short",
-                          day: "numeric",
-                          year: "numeric",
-                        })
-                        .toUpperCase()
-                    : "PENDING"}
-                </p>
-              </div>
-            </div>
+            {order.status !== "Cancelled" && (
+              <>
+                <div className="flex">
+                  <div className="flex flex-col items-center mr-3">
+                    <div className="w-3 h-3 bg-black rounded-none"></div>
+                    <div className="w-0.5 h-full bg-black mt-1"></div>
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold uppercase tracking-wide">
+                      SHIPPED
+                    </p>
+                    <p className="text-xs font-bold uppercase tracking-widest text-gray-500 mt-1">
+                      {order.status === "Delivered"
+                        ? new Date(order.date_placed)
+                            .toLocaleDateString("en-US", {
+                              month: "short",
+                              day: "numeric",
+                              year: "numeric",
+                            })
+                            .toUpperCase()
+                        : "PENDING"}
+                    </p>
+                  </div>
+                </div>
 
-            <div className="flex">
-              <div className="flex flex-col items-center mr-3">
-                <div className="w-3 h-3 bg-black rounded-none"></div>
+                <div className="flex">
+                  <div className="flex flex-col items-center mr-3">
+                    <div className="w-3 h-3 bg-black rounded-none"></div>
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold uppercase tracking-wide">
+                      {order.status === "Delivered"
+                        ? "DELIVERED"
+                        : "ESTIMATED DELIVERY"}
+                    </p>
+                    <p className="text-xs font-bold uppercase tracking-widest text-gray-500 mt-1">
+                      {order.status === "Delivered"
+                        ? new Date(order.date_placed)
+                            .toLocaleDateString("en-US", {
+                              month: "short",
+                              day: "numeric",
+                              year: "numeric",
+                            })
+                            .toUpperCase()
+                        : "OCT 28, 2023"}
+                    </p>
+                  </div>
+                </div>
+              </>
+            )}
+
+            {order.status === "Cancelled" && (
+              <div className="flex">
+                <div className="flex flex-col items-center mr-3">
+                  <div className="w-3 h-3 bg-red-600 rounded-none"></div>
+                </div>
+                <div>
+                  <p className="text-sm font-bold uppercase tracking-wide text-red-600">
+                    ORDER CANCELLED
+                  </p>
+                  <p className="text-xs font-bold uppercase tracking-widest text-red-500 mt-1">
+                    {cancelSuccess 
+                      ? "CANCELLED JUST NOW" 
+                      : new Date(order.date_placed)
+                          .toLocaleDateString("en-US", {
+                            month: "short",
+                            day: "numeric",
+                            year: "numeric",
+                          })
+                          .toUpperCase()}
+                  </p>
+                </div>
               </div>
-              <div>
-                <p className="text-sm font-bold uppercase tracking-wide">
-                  {order.status === "Delivered"
-                    ? "DELIVERED"
-                    : "ESTIMATED DELIVERY"}
-                </p>
-                <p className="text-xs font-bold uppercase tracking-widest text-gray-500 mt-1">
-                  {order.status === "Delivered"
-                    ? new Date(order.date_placed)
-                        .toLocaleDateString("en-US", {
-                          month: "short",
-                          day: "numeric",
-                          year: "numeric",
-                        })
-                        .toUpperCase()
-                    : "OCT 28, 2023"}
-                </p>
-              </div>
-            </div>
+            )}
           </div>
         </div>
+        
         {/* Order Content */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Items List */}
@@ -432,39 +530,41 @@ export default function OrderDetailsPage() {
                 </h2>
               </div>
 
-              {/* Progress Bar */}
-              <div className="mb-6">
-                <div className="flex justify-between text-xs font-bold uppercase mb-2">
-                  <span>Started</span>
-                  <span>Completed</span>
-                </div>
-                <div className="h-1.5 bg-gray-300 rounded-full overflow-hidden">
-                  <div
-                    className={`h-full ${
-                      order.status === "Delivered"
-                        ? "bg-green-600"
-                        : order.status === "Shipped"
-                        ? "bg-blue-600 w-2/3"
-                        : "bg-black w-1/3"
-                    }`}
-                    style={{
-                      width:
+              {/* Progress Bar - Only for non-cancelled orders */}
+              {order.status !== "Cancelled" && (
+                <div className="mb-6">
+                  <div className="flex justify-between text-xs font-bold uppercase mb-2">
+                    <span>Started</span>
+                    <span>Completed</span>
+                  </div>
+                  <div className="h-1.5 bg-gray-300 rounded-full overflow-hidden">
+                    <div
+                      className={`h-full ${
                         order.status === "Delivered"
-                          ? "100%"
+                          ? "bg-green-600"
                           : order.status === "Shipped"
-                          ? "66%"
-                          : "33%",
-                    }}
-                  ></div>
+                          ? "bg-blue-600 w-2/3"
+                          : "bg-black w-1/3"
+                      }`}
+                      style={{
+                        width:
+                          order.status === "Delivered"
+                            ? "100%"
+                            : order.status === "Shipped"
+                            ? "66%"
+                            : "33%",
+                      }}
+                    ></div>
+                  </div>
+                  <div className="mt-2 text-right text-xs font-bold">
+                    {order.status === "Delivered"
+                      ? "100% Complete"
+                      : order.status === "Shipped"
+                      ? "66% Complete"
+                      : "33% Complete"}
+                  </div>
                 </div>
-                <div className="mt-2 text-right text-xs font-bold">
-                  {order.status === "Delivered"
-                    ? "100% Complete"
-                    : order.status === "Shipped"
-                    ? "66% Complete"
-                    : "33% Complete"}
-                </div>
-              </div>
+              )}
 
               <div className="space-y-4">
                 {[
@@ -472,18 +572,25 @@ export default function OrderDetailsPage() {
                     title: "ORDER PLACED",
                     date: order.date_placed,
                     completed: true,
+                    status: "completed"
                   },
                   {
                     title: "ORDER CONFIRMED",
                     date: order.date_placed,
                     completed: order.status !== "Placed",
+                    status: order.status === "Placed" ? "pending" : "completed"
                   },
+                  ...(order.status !== "Cancelled" ? [
                   {
                     title: "SHIPPED",
                     date: order.date_placed,
                     completed:
                       order.status === "Shipped" ||
                       order.status === "Delivered",
+                    status: 
+                      order.status === "Shipped" || order.status === "Delivered" 
+                        ? "completed" 
+                        : "pending"
                   },
                   {
                     title:
@@ -495,18 +602,35 @@ export default function OrderDetailsPage() {
                         ? order.date_placed
                         : "OCT 28, 2023",
                     completed: order.status === "Delivered",
-                  },
+                    status: order.status === "Delivered" ? "completed" : "pending"
+                  }
+                ] : []),
+                ...(order.status === "Cancelled" ? [
+                  {
+                    title: "ORDER CANCELLED",
+                    date: new Date().toISOString(),
+                    completed: true,
+                    status: "cancelled"
+                  }
+                ] : [])
                 ].map((step, index, arr) => {
                   const isLast = index === arr.length - 1;
-                  const statusClass = step.completed
-                    ? "bg-black"
-                    : "bg-gray-300";
+                  let statusClass = "bg-gray-300";
+                  let textClass = "text-gray-400";
+                  
+                  if (step.status === "completed") {
+                    statusClass = "bg-black";
+                    textClass = "text-black";
+                  } else if (step.status === "cancelled") {
+                    statusClass = "bg-red-600";
+                    textClass = "text-red-600";
+                  }
 
                   return (
                     <div className="flex" key={index}>
                       <div className="flex flex-col items-center mr-3">
                         <div
-                          className={`w-3 h-3 rounded-full ${statusClass}`}
+                          className={`w-3 h-3 rounded-none ${statusClass}`}
                         ></div>
                         {!isLast && (
                           <div
@@ -516,14 +640,17 @@ export default function OrderDetailsPage() {
                       </div>
                       <div>
                         <p
-                          className={`text-sm font-bold uppercase tracking-wide ${
-                            step.completed ? "text-black" : "text-gray-400"
-                          }`}
+                          className={`text-sm font-bold uppercase tracking-wide ${textClass}`}
                         >
                           {step.title}
-                          {step.completed && (
+                          {step.completed && step.status !== "cancelled" && (
                             <span className="ml-2 text-xs text-green-600">
                               ✓ Completed
+                            </span>
+                          )}
+                          {step.status === "cancelled" && (
+                            <span className="ml-2 text-xs text-red-600">
+                              ✗ Cancelled
                             </span>
                           )}
                         </p>
