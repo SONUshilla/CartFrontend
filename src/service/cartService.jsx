@@ -72,7 +72,7 @@ export function AddToCart(items) {
             
         }
     } catch (error) {
-        navigate("/signIn");
+        navigate("/signUp");
     }
 };
 
