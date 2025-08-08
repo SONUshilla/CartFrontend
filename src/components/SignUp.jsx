@@ -4,7 +4,7 @@ import axios from "axios";
 import setUpAxios from "./setUpAxios";
 
 const AuthPage = () => {
-  const baseUrl = process.env.BASEURL || "http://localhost:5000";
+  const baseUrl = process.env.REACT_APP_BASEURL || "http://localhost:5000";
   const navigate = useNavigate();
   
   // State for authentication

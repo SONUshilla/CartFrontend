@@ -12,7 +12,7 @@ function Header() {
   const location = useLocation();
 
   // Define paths where Category should be shown
-  const pathsWithCategory = ["/", "/products", "/product-details"];
+  const pathsWithCategory = ["/", "/products", "/product-detail","/products/category"];
 
   // Check if current pathname matches
   const shouldShowCategory = pathsWithCategory.includes(location.pathname);
@@ -42,6 +42,7 @@ function Header() {
       setShowSearchBar(false);
     }
   };
+  const savedCartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
 
   return (
     <div className={`z-50 fixed top-0 left-0 transition-transform duration-400 w-full ${
@@ -55,12 +56,11 @@ function Header() {
             onClick={() => navigate("/")}
           >
             <div className="relative">
-              <div className="absolute -inset-4 transform rotate-45 bg-gray-900 opacity-0 group-hover:opacity-10 transition-opacity duration-300"></div>
-              <div className="flex items-center relative z-10">
+          <div className="flex items-center relative z-10">
                 <div className="bg-gray-900 w-12 h-12 flex items-center justify-center mr-3 transform -skew-x-12">
                   <div className="text-white font-bold text-xl skew-x-12">E</div>
                 </div>
-                <h1 className="text-2xl font-bold tracking-tighter text-gray-900">
+                <h1 className="md:text-2xl hidden md:block  font-bold tracking-tighter text-gray-900">
                   COMMERCE<span className="text-gray-500">.STORE</span>
                 </h1>
               </div>
@@ -93,16 +93,7 @@ function Header() {
 
           {/* Navigation and Auth Buttons */}
           <div className={`flex items-center space-x-6 `}>
-            <div className="hidden md:flex items-center space-x-1">
-              <div className="h-8 w-1 bg-gray-900 mr-2"></div>
-              <button 
-                className="px-4 py-2 text-sm font-medium tracking-wide uppercase text-gray-600 hover:text-gray-900 transition-colors duration-300 relative group"
-                onClick={() => navigate("/")}
-              >
-                Home
-                <div className="absolute bottom-0 left-0 w-0 h-0.5 bg-gray-900 transition-all duration-300 group-hover:w-full"></div>
-              </button>
-            </div>
+          
             
             <div className="flex items-center space-x-4">
               {/* Mobile search button */}
@@ -157,7 +148,7 @@ function Header() {
                   </svg>
                 </div>
                 <div className="absolute -top-1 -right-1 w-5 h-5 flex items-center justify-center bg-red-500 text-white text-xs font-bold rounded-full transform group-hover:scale-110 transition-transform duration-300">
-                  3
+                  {savedCartItems.length}
                 </div>
               </div>
             </div>

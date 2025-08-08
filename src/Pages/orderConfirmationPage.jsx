@@ -21,7 +21,7 @@ const CheckoutFlow = () => {
   const location =useLocation();
   const {products}=location.state || [];
   const [address,setSelectedAddress]=useState(null);
-
+  const [paymentMethod, setPaymentMethod] = useState('card'); // New state for payment method
 const navigate=useNavigate();
 
   // Save address to localStorage
@@ -82,7 +82,7 @@ const navigate=useNavigate();
   // Handle form submission
   const handleSubmit = () => {
     setIsProcessing(true);
-    if(handleCheckout(products,navigate))
+    if(handleCheckout(products,address,navigate,paymentMethod))
     {
       setIsProcessing(false);
       navigate('/orderConfirmationPage');
@@ -94,43 +94,59 @@ const navigate=useNavigate();
   };
 
   return (
-    <div className={`min-h-screen ${darkMode ? 'bg-gray-800' : 'bg-white'} transition-colors duration-300 scroll-smooth`}>
-
+    <div
+      className={`min-h-screen ${
+        darkMode ? "bg-gray-800" : "bg-white"
+      } transition-colors duration-300 scroll-smooth`}
+    >
       <div className="max-w-6xl mx-auto px-4 py-8">
         {/* Header */}
         <header className="flex justify-center items-center mb-12">
-          <h1 className={`text-xl font-extrabold uppercase tracking-tight ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+          <h1
+            className={`text-xl font-extrabold uppercase tracking-tight ${
+              darkMode ? "text-white" : "text-gray-900"
+            }`}
+          >
             CHECKOUT
           </h1>
-
         </header>
 
         {/* Step Indicator */}
         <div className="flex justify-between mb-12 relative">
-          {['ADDRESS', 'REVIEW', 'PAYMENT'].map((label, index) => (
+          {["ADDRESS", "REVIEW", "PAYMENT"].map((label, index) => (
             <React.Fragment key={index}>
               <div className="flex flex-col items-center z-10">
-                <div 
-                  className={`w-10 h-10 flex items-center justify-center rounded-md border ${
-                    step >= index + 1 
-                      ? 'bg-black text-white border-black' 
-                      : darkMode 
-                        ? 'border-gray-600 text-gray-400' 
-                        : 'border-gray-300 text-gray-500'
+                <div
+                  className={`w-10 h-10 flex items-center justify-center border ${
+                    step >= index + 1
+                      ? "bg-black text-white border-black"
+                      : darkMode
+                      ? "border-gray-600 text-gray-400"
+                      : "border-gray-300 text-gray-500"
                   } font-bold text-sm transition-colors`}
                 >
                   {index + 1}
                 </div>
-                <span className={`mt-2 text-xs font-semibold uppercase tracking-wide ${
-                  darkMode ? step === index + 1 ? 'text-white' : 'text-gray-500' : step === index + 1 ? 'text-gray-900' : 'text-gray-400'
-                }`}>
+                <span
+                  className={`mt-2 text-xs font-semibold uppercase tracking-wide ${
+                     step === index + 1
+                      ? "text-gray-900"
+                      : "text-gray-400"
+                  }`}
+                >
                   {label}
                 </span>
               </div>
               {index < 2 && (
-                <div className={`absolute top-5 left-1/4 right-1/4 h-0.5 ${
-                  step > index + 1 ? 'bg-black' : darkMode ? 'bg-gray-700' : 'bg-gray-300'
-                }`}></div>
+                <div
+                  className={`absolute top-5 left-1/4 right-1/4 h-0.5 ${
+                    step > index + 1
+                      ? "bg-black"
+                      : darkMode
+                      ? "bg-gray-700"
+                      : "bg-gray-300"
+                  }`}
+                ></div>
               )}
             </React.Fragment>
           ))}
@@ -149,26 +165,34 @@ const navigate=useNavigate();
                   animate="visible"
                   exit="exit"
                   className={`rounded-md shadow-lg p-6 ${
-                    darkMode ? 'bg-gray-700 border-gray-600' : 'bg-white border-gray-200'
+                    darkMode
+                      ? "bg-gray-700 border-gray-600"
+                      : "bg-white border-gray-200"
                   } border`}
                 >
-                        <ScrollToTop/>
-                  <h2 className={`text-2xl font-extrabold uppercase tracking-tight mb-6 ${
-                    darkMode ? 'text-white' : 'text-gray-900'
-                  }`}>
+                  <ScrollToTop />
+                  <h2
+                    className={`text-2xl font-extrabold uppercase tracking-tight mb-6 ${
+                      darkMode ? "text-white" : "text-gray-900"
+                    }`}
+                  >
                     SHIPPING ADDRESS
                   </h2>
-                  <AddressSection setAddress={setSelectedAddress}/>
-                
-                  
-                  {address && (<div className="mt-8 flex justify-end">
-                    <button
-                      onClick={() => setStep(2)}
-                      className="bg-black text-white px-6 py-3 rounded-md font-bold uppercase text-sm tracking-wide  hover:shadow-lg transition-all flex items-center"
-                    >
-                      CONTINUE <FiArrowRight className="ml-2" />
-                    </button>
-                  </div>)}
+                  <AddressSection setAddress={setSelectedAddress} />
+
+                  {address && (
+                    <div className="relative mt-8 flex justify-end">
+                      <button
+                        onClick={() => setStep(2)}
+                        className="relative border-black border-2 overflow-hidden px-6 py-3 text-black hover:text-white font-bold uppercase text-sm tracking-wide flex items-center group"
+                      >
+                        <span className="absolute inset-0 bg-black transform scale-x-0 origin-left transition-transform duration-300 ease-out group-hover:scale-x-100 z-0" />
+                        <span className="relative z-10 flex items-center">
+                          CONTINUE <FiArrowRight className="ml-2" />
+                        </span>
+                      </button>
+                    </div>
+                  )}
                 </motion.div>
               )}
 
@@ -181,67 +205,89 @@ const navigate=useNavigate();
                   animate="visible"
                   exit="exit"
                   className={`rounded-md shadow-lg p-6 ${
-                    darkMode ? 'bg-gray-700 border-gray-600' : 'bg-white border-gray-200'
+                    darkMode
+                      ? "bg-gray-700 border-gray-600"
+                      : "bg-white border-gray-200"
                   } border`}
                 >
-                        <ScrollToTop/>
-                  <h2 className={`text-2xl font-extrabold uppercase tracking-tight mb-6 ${
-                    darkMode ? 'text-white' : 'text-gray-900'
-                  }`}>
+                  <ScrollToTop />
+                  <h2
+                    className={`text-2xl font-extrabold uppercase tracking-tight mb-6 ${
+                      darkMode ? "text-white" : "text-gray-900"
+                    }`}
+                  >
                     REVIEW ITEMS
                   </h2>
-                  
+
                   <div className="space-y-4">
                     {products.map((product, idx) => (
-                      <div 
-                        key={idx} 
+                      <div
+                        key={idx}
                         className={`flex items-center border-b ${
-                          darkMode ? 'border-gray-600' : 'border-gray-200'
+                          darkMode ? "border-gray-600" : "border-gray-200"
                         } pb-4`}
                       >
                         <div className="w-24 h-24 flex-shrink-0">
-                          <img 
-                            src={product.image} 
-                            alt={product.name} 
+                          <img
+                            src={product.image}
+                            alt={product.name}
                             className="w-full h-full object-contain"
                           />
                         </div>
                         <div className="ml-4 flex-1">
-                          <h3 className={`text-sm font-bold uppercase tracking-wide ${
-                            darkMode ? 'text-white' : 'text-gray-900'
-                          }`}>
+                          <h3
+                            className={`text-sm font-bold uppercase tracking-wide ${
+                              darkMode ? "text-white" : "text-gray-900"
+                            }`}
+                          >
                             {product.name}
                           </h3>
-                          <p className={`text-xs font-semibold uppercase tracking-wide ${
-                            darkMode ? 'text-gray-400' : 'text-gray-500'
-                          }`}>
+                          <p
+                            className={`text-xs font-semibold uppercase tracking-wide ${
+                              darkMode ? "text-gray-400" : "text-gray-500"
+                            }`}
+                          >
                             Size: {product.size} | Color: {product.color}
                           </p>
                           <div className="flex items-center justify-between mt-2">
                             <div className="flex items-center">
-                              <button 
-                                onClick={() => updateQuantity(idx, product.quantity - 1)}
+                              <button
+                                onClick={() =>
+                                  updateQuantity(idx, product.quantity - 1)
+                                }
                                 className={`w-8 h-8 flex items-center justify-center rounded-l-md border ${
-                                  darkMode ? 'border-gray-600 text-gray-300' : 'border-gray-300 text-gray-700'
+                                  darkMode
+                                    ? "border-gray-600 text-gray-300"
+                                    : "border-gray-300 text-gray-700"
                                 } hover:bg-gray-100 transition-colors`}
                               >
                                 <FiMinus className="w-4 h-4" />
                               </button>
-                              <span className={`w-10 text-center text-sm font-bold ${
-                                darkMode ? 'text-white' : 'text-gray-900'
-                              }`}>
+                              <span
+                                className={`w-10 text-center text-sm font-bold ${
+                                  darkMode ? "text-white" : "text-gray-900"
+                                }`}
+                              >
                                 {product.quantity}
                               </span>
-                              <button 
-                                onClick={() => updateQuantity(idx, product.quantity + 1)}
+                              <button
+                                onClick={() =>
+                                  updateQuantity(idx, product.quantity + 1)
+                                }
                                 className={`w-8 h-8 flex items-center justify-center rounded-r-md border ${
-                                  darkMode ? 'border-gray-600 text-gray-300' : 'border-gray-300 text-gray-700'
+                                  darkMode
+                                    ? "border-gray-600 text-gray-300"
+                                    : "border-gray-300 text-gray-700"
                                 } hover:bg-gray-100 transition-colors`}
                               >
                                 <FiPlus className="w-4 h-4" />
                               </button>
                             </div>
-                            <p className={`text-sm font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                            <p
+                              className={`text-sm font-bold ${
+                                darkMode ? "text-white" : "text-gray-900"
+                              }`}
+                            >
                               ${(product.price * product.quantity).toFixed(2)}
                             </p>
                           </div>
@@ -249,22 +295,27 @@ const navigate=useNavigate();
                       </div>
                     ))}
                   </div>
-                  
+
                   <div className="mt-6 flex justify-between">
                     <button
                       onClick={() => setStep(1)}
                       className={`flex items-center px-4 py-2 font-bold uppercase text-sm tracking-wide ${
-                        darkMode ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-gray-900'
+                        darkMode
+                          ? "text-gray-300 hover:text-white"
+                          : "text-gray-700 hover:text-gray-900"
                       }`}
                     >
                       <FiArrowLeft className="mr-2" /> BACK
                     </button>
                     <button
-                      onClick={() => setStep(3)}
-                      className="bg-black text-white px-6 py-3 rounded-md font-bold uppercase text-sm tracking-wide hover:bg-pink-600 hover:shadow-lg transition-all flex items-center"
-                    >
-                      CONTINUE <FiArrowRight className="ml-2" />
-                    </button>
+                        onClick={() => setStep(3)}
+                        className="relative border-black border-2 overflow-hidden px-6 py-3 text-black hover:text-white font-bold uppercase text-sm tracking-wide flex items-center group"
+                      >
+                        <span className="absolute inset-0 bg-black transform scale-x-0 origin-left transition-transform duration-300 ease-out group-hover:scale-x-100 z-0" />
+                        <span className="relative z-10 flex items-center">
+                          CONTINUE <FiArrowRight className="ml-2" />
+                        </span>
+                      </button>
                   </div>
                 </motion.div>
               )}
@@ -277,109 +328,204 @@ const navigate=useNavigate();
                   initial="hidden"
                   animate="visible"
                   exit="exit"
-                  className={`rounded-md shadow-lg p-6 ${
-                    darkMode ? 'bg-gray-700 border-gray-600' : 'bg-white border-gray-200'
-                  } border`}
+                  className={`rounded-sm shadow-lg p-6 ${
+                    darkMode
+                      ? "bg-gray-700 border-2 border-gray-600"
+                      : "bg-white border-2 border-gray-200"
+                  }`}
                 >
-                        <ScrollToTop/>
-                  <h2 className={`text-2xl font-extrabold uppercase tracking-tight mb-6 ${
-                    darkMode ? 'text-white' : 'text-gray-900'
-                  }`}>
+                  <ScrollToTop />
+                  <h2
+                    className={`text-2xl font-extrabold uppercase tracking-tight mb-6 ${
+                      darkMode ? "text-white" : "text-gray-900"
+                    }`}
+                  >
                     PAYMENT METHOD
                   </h2>
-                  
+
                   <div className="space-y-6">
-                    <div>
-                      <label className={`block text-sm font-semibold uppercase tracking-wide mb-1 ${
-                        darkMode ? 'text-gray-300' : 'text-gray-700'
-                      }`}>
-                        CARD NUMBER
-                      </label>
-                      <div className="relative">
-                        <FiCreditCard className={`absolute left-3 top-1/2 transform -translate-y-1/2 ${
-                          darkMode ? 'text-gray-400' : 'text-gray-500'
-                        }`} />
-                        <input
-                          type="text"
-                          value={payment.cardNumber}
-                          onChange={(e) => setPayment({...payment, cardNumber: e.target.value})}
-                          className={`w-full pl-10 pr-4 py-3 rounded-md border text-sm font-bold uppercase ${
-                            darkMode 
-                              ? 'bg-gray-600 border-gray-500 text-white placeholder-gray-400 focus:ring-pink-500 focus:border-pink-500' 
-                              : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:ring-pink-500 focus:border-pink-500'
-                          }`}
-                          placeholder="0000 0000 0000 0000"
-                        />
-                      </div>
+                    {/* Payment Method Selection */}
+                    <div className="flex flex-wrap gap-4">
+                      <button
+                        onClick={() => setPaymentMethod('card')}
+                        className={`px-4 py-2 border-2 font-bold uppercase text-sm tracking-wide transition-all duration-300 ${
+                          paymentMethod === 'card'
+                            ? 'bg-black text-white border-black'
+                            : darkMode
+                            ? 'border-gray-600 text-gray-300 hover:bg-gray-600'
+                            : 'border-gray-300 text-gray-700 hover:bg-gray-100'
+                        }`}
+                      >
+                        Credit Card
+                      </button>
+                      
+                      <button
+                        onClick={() => setPaymentMethod('cod')}
+                        className={`px-4 py-2 border-2 font-bold uppercase text-sm tracking-wide transition-all duration-300 ${
+                          paymentMethod === 'cod'
+                            ? 'bg-black text-white border-black'
+                            : darkMode
+                            ? 'border-gray-600 text-gray-300 hover:bg-gray-600'
+                            : 'border-gray-300 text-gray-700 hover:bg-gray-100'
+                        }`}
+                      >
+                        Cash on Delivery
+                      </button>
+                      
+                      <button
+                        onClick={() => setPaymentMethod('upi')}
+                        className={`px-4 py-2 border-2 font-bold uppercase text-sm tracking-wide transition-all duration-300 ${
+                          paymentMethod === 'upi'
+                            ? 'bg-black text-white border-black'
+                            : darkMode
+                            ? 'border-gray-600 text-gray-300 hover:bg-gray-600'
+                            : 'border-gray-300 text-gray-700 hover:bg-gray-100'
+                        }`}
+                      >
+                        UPI
+                      </button>
                     </div>
-                    
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <label className={`block text-sm font-semibold uppercase tracking-wide mb-1 ${
-                          darkMode ? 'text-gray-300' : 'text-gray-700'
-                        }`}>
-                          EXPIRY DATE
-                        </label>
-                        <input
-                          type="text"
-                          value={payment.expiry}
-                          onChange={(e) => setPayment({...payment, expiry: e.target.value})}
-                          className={`w-full px-4 py-3 rounded-md border text-sm font-bold uppercase ${
-                            darkMode 
-                              ? 'bg-gray-600 border-gray-500 text-white placeholder-gray-400 focus:ring-pink-500 focus:border-pink-500' 
-                              : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:ring-pink-500 focus:border-pink-500'
-                          }`}
-                          placeholder="MM/YY"
-                        />
-                      </div>
-                      <div>
-                        <label className={`block text-sm font-semibold uppercase tracking-wide mb-1 ${
-                          darkMode ? 'text-gray-300' : 'text-gray-700'
-                        }`}>
-                          CVV
-                        </label>
-                        <div className="relative">
-                          <FiLock className={`absolute left-3 top-1/2 transform -translate-y-1/2 ${
-                            darkMode ? 'text-gray-400' : 'text-gray-500'
-                          }`} />
+
+                    {/* Card Payment Form */}
+                    {paymentMethod === 'card' && (
+                      <>
+                        <div>
+                          <label
+                            className={`block text-sm font-semibold uppercase tracking-wide mb-1 ${
+                              darkMode ? "text-gray-300" : "text-gray-700"
+                            }`}
+                          >
+                            CARD NUMBER
+                          </label>
+                          <div className="relative">
+                            <FiCreditCard
+                              className={`absolute left-3 top-1/2 transform -translate-y-1/2 ${
+                                darkMode ? "text-gray-400" : "text-gray-500"
+                              }`}
+                            />
+                            <input
+                              type="text"
+                              value={payment.cardNumber}
+                              onChange={(e) =>
+                                setPayment({
+                                  ...payment,
+                                  cardNumber: e.target.value,
+                                })
+                              }
+                              className={`w-full pl-10 pr-4 py-3 rounded-sm border-2 text-sm font-bold uppercase ${
+                                darkMode
+                                  ? "bg-gray-600 border-gray-500 text-white placeholder-gray-400 focus:ring-black focus:border-black"
+                                  : "bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:ring-black focus:border-black"
+                              }`}
+                              placeholder="0000 0000 0000 0000"
+                            />
+                          </div>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <label
+                              className={`block text-sm font-semibold uppercase tracking-wide mb-1 ${
+                                darkMode ? "text-gray-300" : "text-gray-700"
+                              }`}
+                            >
+                              EXPIRY DATE
+                            </label>
+                            <input
+                              type="text"
+                              value={payment.expiry}
+                              onChange={(e) =>
+                                setPayment({ ...payment, expiry: e.target.value })
+                              }
+                              className={`w-full px-4 py-3 rounded-sm border-2 text-sm font-bold uppercase ${
+                                darkMode
+                                  ? "bg-gray-600 border-gray-500 text-white placeholder-gray-400 focus:ring-black focus:border-black"
+                                  : "bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:ring-black focus:border-black"
+                              }`}
+                              placeholder="MM/YY"
+                            />
+                          </div>
+                          <div>
+                            <label
+                              className={`block text-sm font-semibold uppercase tracking-wide mb-1 ${
+                                darkMode ? "text-gray-300" : "text-gray-700"
+                              }`}
+                            >
+                              CVV
+                            </label>
+                            <div className="relative">
+                              <FiLock
+                                className={`absolute left-3 top-1/2 transform -translate-y-1/2 ${
+                                  darkMode ? "text-gray-400" : "text-gray-500"
+                                }`}
+                              />
+                              <input
+                                type="text"
+                                value={payment.cvv}
+                                onChange={(e) =>
+                                  setPayment({ ...payment, cvv: e.target.value })
+                                }
+                                className={`w-full pl-10 pr-4 py-3 rounded-sm border-2 text-sm font-bold uppercase ${
+                                  darkMode
+                                    ? "bg-gray-600 border-gray-500 text-white placeholder-gray-400 focus:ring-black focus:border-black"
+                                    : "bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:ring-black focus:border-black"
+                                }`}
+                                placeholder="123"
+                              />
+                            </div>
+                          </div>
+                        </div>
+
+                        <div>
+                          <label
+                            className={`block text-sm font-semibold uppercase tracking-wide mb-1 ${
+                              darkMode ? "text-gray-300" : "text-gray-700"
+                            }`}
+                          >
+                            CARDHOLDER NAME
+                          </label>
                           <input
                             type="text"
-                            value={payment.cvv}
-                            onChange={(e) => setPayment({...payment, cvv: e.target.value})}
-                            className={`w-full pl-10 pr-4 py-3 rounded-md border text-sm font-bold uppercase ${
-                              darkMode 
-                                ? 'bg-gray-600 border-gray-500 text-white placeholder-gray-400 focus:ring-pink-500 focus:border-pink-500' 
-                                : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:ring-pink-500 focus:border-pink-500'
+                            value={payment.name}
+                            onChange={(e) =>
+                              setPayment({ ...payment, name: e.target.value })
+                            }
+                            className={`w-full px-4 py-3 rounded-sm border-2 text-sm font-bold uppercase ${
+                              darkMode
+                                ? "bg-gray-600 border-gray-500 text-white placeholder-gray-400 focus:ring-black focus:border-black"
+                                : "bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:ring-black focus:border-black"
                             }`}
-                            placeholder="123"
+                            placeholder="JOHN DOE"
                           />
                         </div>
+                      </>
+                    )}
+
+                    {/* Cash on Delivery Message */}
+                    {paymentMethod === 'cod' && (
+                      <div className={`p-4 border-2 ${darkMode ? 'border-gray-600' : 'border-gray-300'}`}>
+                        <p className={`font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                          Pay with cash when your order is delivered
+                        </p>
                       </div>
-                    </div>
-                    
+                    )}
+
+                    {/* UPI Payment Message */}
+                    {paymentMethod === 'upi' && (
+                      <div className={`p-4 border-2 ${darkMode ? 'border-gray-600' : 'border-gray-300'}`}>
+                        <p className={`font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                          You'll be redirected to your UPI app for payment
+                        </p>
+                      </div>
+                    )}
+
+                    {/* Promo Code Section */}
                     <div>
-                      <label className={`block text-sm font-semibold uppercase tracking-wide mb-1 ${
-                        darkMode ? 'text-gray-300' : 'text-gray-700'
-                      }`}>
-                        CARDHOLDER NAME
-                      </label>
-                      <input
-                        type="text"
-                        value={payment.name}
-                        onChange={(e) => setPayment({...payment, name: e.target.value})}
-                        className={`w-full px-4 py-3 rounded-md border text-sm font-bold uppercase ${
-                          darkMode 
-                            ? 'bg-gray-600 border-gray-500 text-white placeholder-gray-400 focus:ring-pink-500 focus:border-pink-500' 
-                            : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:ring-pink-500 focus:border-pink-500'
+                      <label
+                        className={`block text-sm font-semibold uppercase tracking-wide mb-1 ${
+                          darkMode ? "text-gray-300" : "text-gray-700"
                         }`}
-                        placeholder="JOHN DOE"
-                      />
-                    </div>
-                    
-                    <div>
-                      <label className={`block text-sm font-semibold uppercase tracking-wide mb-1 ${
-                        darkMode ? 'text-gray-300' : 'text-gray-700'
-                      }`}>
+                      >
                         PROMO CODE
                       </label>
                       <div className="flex">
@@ -387,25 +533,31 @@ const navigate=useNavigate();
                           type="text"
                           value={promoCode}
                           onChange={(e) => setPromoCode(e.target.value)}
-                          className={`flex-1 px-4 py-3 rounded-l-md border text-sm font-bold uppercase ${
-                            darkMode 
-                              ? 'bg-gray-600 border-gray-500 text-white placeholder-gray-400 focus:ring-pink-500 focus:border-pink-500' 
-                              : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:ring-pink-500 focus:border-pink-500'
+                          className={`flex-1 px-4 py-3 rounded-l-sm border-2 text-sm font-bold uppercase ${
+                            darkMode
+                              ? "bg-gray-600 border-gray-500 text-white placeholder-gray-400 focus:ring-black focus:border-black"
+                              : "bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:ring-black focus:border-black"
                           }`}
                           placeholder="ENTER CODE"
                         />
-                        <button className="bg-gray-200 text-gray-700 px-4 py-3 rounded-r-md font-bold uppercase text-sm tracking-wide hover:bg-gray-300 transition-colors">
+                        <button className={`border-2 border-l-0 ${
+                          darkMode 
+                            ? 'bg-gray-600 border-gray-500 text-gray-300 hover:bg-gray-700' 
+                            : 'bg-gray-100 border-gray-300 text-gray-700 hover:bg-gray-200'
+                        } px-4 py-3 rounded-r-sm font-bold uppercase text-sm tracking-wide transition-colors`}>
                           APPLY
                         </button>
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="mt-8 flex justify-between">
                     <button
                       onClick={() => setStep(2)}
                       className={`flex items-center px-4 py-2 font-bold uppercase text-sm tracking-wide ${
-                        darkMode ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-gray-900'
+                        darkMode
+                          ? "text-gray-300 hover:text-white"
+                          : "text-gray-700 hover:text-gray-900"
                       }`}
                     >
                       <FiArrowLeft className="mr-2" /> BACK
@@ -413,19 +565,22 @@ const navigate=useNavigate();
                     <button
                       onClick={handleSubmit}
                       disabled={isProcessing}
-                      className={`bg-black text-white px-8 py-3 rounded-md font-bold uppercase text-sm tracking-wide hover:bg-pink-600 hover:shadow-lg transition-all flex items-center ${
-                        isProcessing ? 'opacity-75 cursor-not-allowed' : ''
+                      className={`relative border-2 border-black overflow-hidden px-8 py-3 font-bold uppercase text-sm tracking-wide flex items-center group transition-all duration-300 ${
+                        isProcessing ? "opacity-75 cursor-not-allowed" : ""
                       }`}
                     >
-                      {isProcessing ? (
-                        <span className="flex items-center">
-                          PROCESSING...
-                        </span>
-                      ) : (
-                        <span className="flex items-center">
-                          PAY ${total} <FiArrowRight className="ml-2" />
-                        </span>
-                      )}
+                      <span className="absolute inset-0 bg-black transform scale-x-0 origin-left transition-transform duration-300 ease-out group-hover:scale-x-100 z-0" />
+                      <span className="relative z-10 flex items-center text-black group-hover:text-white">
+                        {isProcessing ? (
+                          "PROCESSING..."
+                        ) : paymentMethod === 'cod' ? (
+                          "PLACE ORDER"
+                        ) : (
+                          <>
+                            PAY ${total} <FiArrowRight className="ml-2" />
+                          </>
+                        )}
+                      </span>
                     </button>
                   </div>
                 </motion.div>
@@ -435,65 +590,102 @@ const navigate=useNavigate();
 
           {/* Order Summary */}
           <div className="lg:col-span-1">
-            <div className={`rounded-md shadow-lg p-6 sticky top-24 ${
-              darkMode ? 'bg-gray-700 border-gray-600' : 'bg-white border-gray-200'
-            } border`}
+            <div
+              className={`rounded-md shadow-lg p-6 sticky top-24 ${
+                darkMode
+                  ? "bg-gray-700 border-gray-600"
+                  : "bg-white border-gray-200"
+              } border`}
             >
-              <h2 className={`text-xl font-extrabold uppercase tracking-tight mb-6 ${
-                darkMode ? 'text-white' : 'text-gray-900'
-              }`}>
+              <h2
+                className={`text-xl font-extrabold uppercase tracking-tight mb-6 ${
+                  darkMode ? "text-white" : "text-gray-900"
+                }`}
+              >
                 ORDER SUMMARY
               </h2>
-              
+
               <div className="space-y-4">
                 <div className="flex justify-between">
-                  <span className={`text-sm font-semibold uppercase tracking-wide ${
-                    darkMode ? 'text-gray-400' : 'text-gray-600'
-                  }`}>
+                  <span
+                    className={`text-sm font-semibold uppercase tracking-wide ${
+                      darkMode ? "text-gray-400" : "text-gray-600"
+                    }`}
+                  >
                     SUBTOTAL
                   </span>
-                  <span className={`text-sm font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                  <span
+                    className={`text-sm font-bold ${
+                      darkMode ? "text-white" : "text-gray-900"
+                    }`}
+                  >
                     ${subtotal}
                   </span>
                 </div>
-                
+
                 <div className="flex justify-between">
-                  <span className={`text-sm font-semibold uppercase tracking-wide ${
-                    darkMode ? 'text-gray-400' : 'text-gray-600'
-                  }`}>
+                  <span
+                    className={`text-sm font-semibold uppercase tracking-wide ${
+                      darkMode ? "text-gray-400" : "text-gray-600"
+                    }`}
+                  >
                     SHIPPING
                   </span>
-                  <span className={`text-sm font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                  <span
+                    className={`text-sm font-bold ${
+                      darkMode ? "text-white" : "text-gray-900"
+                    }`}
+                  >
                     ${shipping}
                   </span>
                 </div>
-                
+
                 <div className="flex justify-between">
-                  <span className={`text-sm font-semibold uppercase tracking-wide ${
-                    darkMode ? 'text-gray-400' : 'text-gray-600'
-                  }`}>
+                  <span
+                    className={`text-sm font-semibold uppercase tracking-wide ${
+                      darkMode ? "text-gray-400" : "text-gray-600"
+                    }`}
+                  >
                     TAX
                   </span>
-                  <span className={`text-sm font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                  <span
+                    className={`text-sm font-bold ${
+                      darkMode ? "text-white" : "text-gray-900"
+                    }`}
+                  >
                     ${tax}
                   </span>
                 </div>
-                
+
                 <div className="pt-4 border-t border-gray-300 flex justify-between">
-                  <span className={`text-base font-extrabold uppercase tracking-tight ${
-                    darkMode ? 'text-white' : 'text-gray-900'
-                  }`}>
+                  <span
+                    className={`text-base font-extrabold uppercase tracking-tight ${
+                      darkMode ? "text-white" : "text-gray-900"
+                    }`}
+                  >
                     TOTAL
                   </span>
-                  <span className={`text-base font-extrabold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                  <span
+                    className={`text-base font-extrabold ${
+                      darkMode ? "text-white" : "text-gray-900"
+                    }`}
+                  >
                     ${total}
                   </span>
                 </div>
               </div>
-              
+
               <div className="mt-8 flex items-center">
-                <FiLock className={`mr-2 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`} />
-                <span className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                <FiLock
+                  className={`mr-2 ${
+                    darkMode ? "text-gray-400" : "text-gray-500"
+                  }`}
+                />
+                <span
+                  className={`text-xs ${
+                    darkMode ? "text-gray-400" : "text-gray-600"
+                  }`}
+                >
                   Your payment is securely encrypted
                 </span>
               </div>

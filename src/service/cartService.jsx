@@ -1,19 +1,20 @@
 import axios from "axios";
 import setUpAxios from "../components/setUpAxios";
 import { color } from "framer-motion";
+import { address } from "framer-motion/client";
 const baseUrl = process.env.REACT_APP_BASEURL;
 
 export function AddToCart(items) {
 
     const token = localStorage.getItem("token");
     const newItem = {
+      id:items.id,
       name: items.title,
       quantity: 1,
       image: items.image,
       price: items.price,
       color: items.color,
       title:items.title,
-
     };
 
 
@@ -50,12 +51,14 @@ export function AddToCart(items) {
   }
 
 
-  export const handleCheckout = async (cartItems,navigate) => {
+  export const handleCheckout = async (cartItems,address,navigate,paymentMethod) => {
     try {
         setUpAxios();
         
         const response = await axios.post(`${baseUrl}/checkOut`, {
           cartItems:cartItems,
+          address:address,
+          paymentMethod:paymentMethod
         },
         {
             headers: {
