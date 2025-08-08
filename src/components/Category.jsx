@@ -78,7 +78,7 @@ function Category() {
             </button>
 
             {/* Dynamic Category Buttons - This is the scrollable area */}
-            <div ref={scrollContainerRef} className="flex overflow-x-auto whitespace-nowrap gap-4 py-4 md:py-0 no-scrollbar flex-grow px-0 mx-10">
+            <div ref={scrollContainerRef} className="flex overflow-x-auto whitespace-nowrap md:gap-4 md:py-0 no-scrollbar flex-grow px-0 md:mx-10">
              {/* Dynamic Category Buttons */}
               {categoriesList.map((category, index) => {
                 const path = `/category/${category}`;

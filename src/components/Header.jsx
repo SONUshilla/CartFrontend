@@ -1,6 +1,7 @@
 import {React, useState, useEffect } from "react";
 import { useNavigate,useLocation } from "react-router-dom";
 import Category from "./Category";
+import axios from "axios";
 
 function Header() {
   const token = localStorage.getItem("token");
@@ -10,6 +11,32 @@ function Header() {
   const [searchQuery, setSearchQuery] = useState("");
   const [showSearchBar, setShowSearchBar] = useState(false);
   const location = useLocation();
+  const[loggedIn,setIsloggedIn]=useState(false);
+  const baseUrl=process.env.REACT_APP_BASEURL;
+
+  useEffect(()=>{
+checkLogin();
+  },[token]);
+
+  const checkLogin = async () => {
+    try {  
+      const res = await axios.get(`${baseUrl}/check-session`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+  
+      if (res.status === 200) {
+        setIsloggedIn(true);
+      } else {
+        setIsloggedIn(false);
+      }
+    } catch (error) {
+      console.error("Login check failed:", error);
+      setIsloggedIn(false);
+    }
+  };
+  
 
   // Define paths where Category should be shown
   const pathsWithCategory = ["/", "/products", "/product-detail","/products/category"];
@@ -32,7 +59,7 @@ function Header() {
 
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [lastScrollY]);
+  }, []);
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -106,7 +133,7 @@ function Header() {
                 </svg>
               </button>
               
-              {!token ? (
+              {!loggedIn ? (
                 <>
                   <button 
                     className="px-4 py-2 text-sm font-medium tracking-wide uppercase bg-gray-900 text-white hover:bg-white hover:text-gray-900 border-2 border-gray-900 transition-all duration-300 relative overflow-hidden group"

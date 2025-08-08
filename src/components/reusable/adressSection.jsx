@@ -419,9 +419,9 @@ const AddressSection = ({ setAddress, darkMode }) => {
           </div>
         </div>
       ) : selectedAddress ? (
-        <div className={`rounded-sm p-6 border-2 ${borderColor} ${bgColor}`}>
-          <div className="flex justify-between items-start">
-            <div>
+        <div className={`rounded-sm md:p-6 p-2 border-2 ${borderColor} ${bgColor}`}>
+          <div className="flex md:flex-row flex-col  md:justify-between md:items-start">
+            <div className="flex flex-col justify-center">
               <h2
                 className={`text-xl font-extrabold uppercase tracking-tight ${textColor} mb-4`}
               >
@@ -457,7 +457,7 @@ const AddressSection = ({ setAddress, darkMode }) => {
               )}
             </div>
 
-            <div className="flex flex-col items-end">
+            <div className="flex flex-col mt-4 md-mt-0 items-center md:items-end ">
               {selectedAddress.isDefault && (
                 <span className="inline-flex items-center px-2 py-0.5 rounded-sm text-xs font-bold uppercase bg-black text-white mb-2">
                   Default
