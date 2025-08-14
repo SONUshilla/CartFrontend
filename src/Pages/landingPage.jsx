@@ -1,8 +1,8 @@
 // src/components/LandingPage.jsx
-import React, { useState, useEffect, useRef } from 'react';
-import { motion } from 'framer-motion';
-import Product from '../utils/product';
-import axios from 'axios';
+import React, { useState, useEffect, useRef } from "react";
+import { motion } from "framer-motion";
+import Product from "../utils/product";
+import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 const LandingPage = ({ products }) => {
@@ -13,31 +13,35 @@ const LandingPage = ({ products }) => {
   const [categories, setCategories] = useState([]);
   const [bestDeals, setBestDeals] = useState([]);
   const [isHovered, setIsHovered] = useState(false);
-  
+
   useEffect(() => {
     if (isHovered) return; // Stop auto-scroll on hover
-  
+
     const interval = setInterval(() => {
       setCurrentBanner((prev) => (prev + 1) % bestDeals.length);
     }, 5000); // Change every 5s
-  
+
     return () => clearInterval(interval);
   }, [isHovered, bestDeals.length]);
   useEffect(() => {
     const fetchHighlights = async () => {
       try {
-        const res = await axios.get(`${process.env.REACT_APP_BASEURL}/highlights`);
+        const res = await axios.get(
+          `${process.env.REACT_APP_BASEURL}/highlights`
+        );
 
         setPhones(res.data.phones);
         setLaptops(res.data.laptops);
         setBestDeals(res.data.bestDeals);
 
         // Convert categories object to array for grid rendering
-        const categoryArray = Object.entries(res.data.categories).map(([key, value]) => ({
-          id: key,
-          name: key.replace(/([A-Z])/g, ' $1').toUpperCase(),
-          ...value
-        }));
+        const categoryArray = Object.entries(res.data.categories).map(
+          ([key, value]) => ({
+            id: key,
+            name: key.replace(/([A-Z])/g, " $1").toUpperCase(),
+            ...value,
+          })
+        );
         setCategories(categoryArray);
       } catch (err) {
         console.error("Failed to fetch highlights:", err);
@@ -46,61 +50,61 @@ const LandingPage = ({ products }) => {
 
     fetchHighlights();
   }, []);
-  
+
   // Scroll functions for mobile section
   const scrollMobileLeft = () => {
     if (mobileScrollRef.current) {
-      mobileScrollRef.current.scrollBy({ left: -300, behavior: 'smooth' });
+      mobileScrollRef.current.scrollBy({ left: -300, behavior: "smooth" });
     }
   };
-  
+
   const scrollMobileRight = () => {
     if (mobileScrollRef.current) {
-      mobileScrollRef.current.scrollBy({ left: 300, behavior: 'smooth' });
+      mobileScrollRef.current.scrollBy({ left: 300, behavior: "smooth" });
     }
   };
 
   // Scroll functions for laptop section
   const scrollLaptopLeft = () => {
     if (laptopScrollRef.current) {
-      laptopScrollRef.current.scrollBy({ left: -300, behavior: 'smooth' });
+      laptopScrollRef.current.scrollBy({ left: -300, behavior: "smooth" });
     }
   };
-  
+
   const scrollLaptopRight = () => {
     if (laptopScrollRef.current) {
-      laptopScrollRef.current.scrollBy({ left: 300, behavior: 'smooth' });
+      laptopScrollRef.current.scrollBy({ left: 300, behavior: "smooth" });
     }
   };
   const navigate = useNavigate();
 
   const handleCategoryClick = (product) => {
-    console.log(product.category)
+    console.log(product.category);
     navigate("/products/category", {
-      state: { category: "/category/"+product.category.toLowerCase()},
+      state: { category: "/category/" + product.category.toLowerCase() },
     });
   };
 
   // State for hero banner
   const [currentBanner, setCurrentBanner] = useState(0);
-  
+
   // Auto-rotate banners
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentBanner((prev) => (prev + 1) % bestDeals.length);
     }, 5000);
-    
+
     return () => clearInterval(interval);
   }, [bestDeals.length]);
 
   // Animation variants
   const fadeIn = {
     hidden: { opacity: 0, y: 20 },
-    visible: { 
-      opacity: 1, 
+    visible: {
+      opacity: 1,
       y: 0,
-      transition: { duration: 0.5 }
-    }
+      transition: { duration: 0.5 },
+    },
   };
 
   const staggerContainer = {
@@ -108,9 +112,9 @@ const LandingPage = ({ products }) => {
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.1
-      }
-    }
+        staggerChildren: 0.1,
+      },
+    },
   };
   const handleClick = (product) => {
     navigate("/product-detail", {
@@ -161,16 +165,18 @@ const LandingPage = ({ products }) => {
                           {banner.price}
                         </span>
                         <span className="text-xl line-through text-gray-300">
-                          ₹
+                          $
                           {parseInt(
                             banner.price.replace(/,/g, "").replace("₹", "")
-                          ) * 1.25}
+                          )}
                         </span>
                       </div>
                       <motion.button
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
-                        onClick={()=>{handleClick(banner)}}
+                        onClick={() => {
+                          handleClick(banner);
+                        }}
                         className="relative overflow-hidden group py-3 px-6 font-bold uppercase tracking-wider border border-black bg-white text-black"
                       >
                         <span className="relative z-10 transition-colors duration-300 group-hover:text-white">
