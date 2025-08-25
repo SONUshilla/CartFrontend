@@ -190,7 +190,7 @@ export default function OrdersPage() {
 
                       <div className="flex items-center">
                         <p className="text-sm font-bold text-gray-900 mr-3">
-                          ₹{order.price.toLocaleString()}
+                          ${order.price.toLocaleString()}
                         </p>
                         <FiChevronRight className="text-gray-400 hidden md:block" size={18} />
                       </div>

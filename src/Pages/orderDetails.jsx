@@ -274,7 +274,7 @@ const navigation=useNavigate();
                 TOTAL AMOUNT
               </p>
               <p className="text-sm font-bold uppercase tracking-wider mt-1">
-                ₹ {order.total.toLocaleString()}
+                $ {order.total.toLocaleString()}
               </p>
             </div>
           </motion.div>
@@ -378,7 +378,13 @@ const navigation=useNavigate();
                               year: "numeric",
                             })
                             .toUpperCase()
-                        : "OCT 28, 2023"}
+                        : new Date(order.date_placed)
+                        .toLocaleDateString("en-US", {
+                          month: "short",
+                          day: "numeric",
+                          year: "numeric",
+                        })
+                        .toUpperCase()}
                     </p>
                   </div>
                 </div>
@@ -463,12 +469,12 @@ const navigation=useNavigate();
 
                     <div className="text-right">
                       <p className={`text-sm font-bold ${textColor}`}>
-                        ₹ {(item.price * item.quantity).toLocaleString()}
+                        $ {(item.price * item.quantity).toLocaleString()}
                       </p>
                       <p
                         className={`text-xs font-semibold uppercase tracking-widest ${textMuted}`}
                       >
-                        ₹ {item.price.toLocaleString()} EACH
+                        $ {item.price.toLocaleString()} EACH
                       </p>
                     </div>
                   </motion.div>
@@ -501,16 +507,16 @@ const navigation=useNavigate();
                 </div>
                 <div className="text-right">
                   <p className={`text-xs font-bold ${textColor}`}>
-                    ₹ {(order.total * 0.85).toLocaleString()}
+                    $ {(order.total * 0.85).toLocaleString()}
                   </p>
                   <p className={`text-xs font-bold mt-2 ${textColor}`}>
-                    ₹ {(order.total * 0.1).toLocaleString()}
+                    $ {(order.total * 0.1).toLocaleString()}
                   </p>
                   <p className={`text-xs font-bold mt-2 ${textColor}`}>
-                    ₹ {(order.total * 0.05).toLocaleString()}
+                    $ {(order.total * 0.05).toLocaleString()}
                   </p>
                   <p className={`text-lg font-bold mt-4 ${textColor}`}>
-                    ₹ {order.total.toLocaleString()}
+                    $ {order.total.toLocaleString()}
                   </p>
                 </div>
               </div>
@@ -600,7 +606,17 @@ const navigation=useNavigate();
                     date:
                       order.status === "Delivered"
                         ? order.date_placed
-                        : "OCT 28, 2023",
+                        : new Date(
+                          new Date(order.date_placed).setDate(
+                            new Date(order.date_placed).getDate() + 4
+                          )
+                        )
+                        .toLocaleDateString("en-US", {
+                          month: "short",
+                          day: "numeric",
+                          year: "numeric",
+                        })
+                        .toUpperCase(),
                     completed: order.status === "Delivered",
                     status: order.status === "Delivered" ? "completed" : "pending"
                   }
